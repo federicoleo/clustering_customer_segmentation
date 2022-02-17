@@ -1,4 +1,4 @@
-## Analysis of customer data to create Buyer Personas' using K-means clustering.
+## Analysis of customer data to perform customer segmentation using K-means clustering.
 
 from unicodedata import numeric
 import pandas as pd
@@ -19,7 +19,7 @@ def get_downloadable_data(df):
     return df.to_csv().encode('utf-8')
 
 
-url = 'https://raw.githubusercontent.com/federicoleo/data_science_project/master/marketing_data.csv'
+url = 'https://raw.githubusercontent.com/federicoleo/programming_project_2022/main/marketing_data.csv'
 marketing_data_static = get_data(url)
 marketing_data = marketing_data_static.copy()
 
@@ -30,7 +30,7 @@ modeling = st.container()
 
 
 with header:
-  st.title('Analysis of customer data to create Buyer Personas using K-means clustering.')
+  st.title('Analysis of customer data to perform customer segmentation using K-means clustering.')
   st.write('Dataset source: [click link](' + url + ')')
   st.download_button('DOWNLOAD RAW DATA', get_downloadable_data(marketing_data_static), file_name='marketing_raw.csv')
 
@@ -38,10 +38,10 @@ with data_exploration_cleaning:
   st.markdown('''
   ## 1. Data Exploration and Cleaning.
 
-  #### This is how our data are represented in the DataFrame:''')
+  #### This is how data are represented in the DataFrame:''')
   st.dataframe(marketing_data)
 
-  st.write('Our Dataframe has', marketing_data.shape[0],'rows and', marketing_data.shape[1], 'columns.')
+  st.write('The Dataframe has', marketing_data.shape[0],'rows and', marketing_data.shape[1], 'columns.')
   st.write(marketing_data.columns.T)
 
   column_expl = st.button('Click for full column description')
@@ -77,11 +77,11 @@ with data_exploration_cleaning:
     - Country=Customer's location
     ''')
 
-  #Income column contains some null values. We are going to drop them operate on the rest of the data."""
+  #Income column contains some null values. They will be dropped to operate properly on the rest of the data.
 
   marketing_data.dropna(inplace=True)
 
-  #We noticed also that the Income column contained some blank spaces in the title and also the data type string with the $ symbol. We need to convert the column into int dtype in order to let us perform analysis also on this column.
+  ##Also, the Income column contained some blank spaces in the title and the data type is object with the $ symbol.
 
   marketing_data.columns = marketing_data.columns.str.replace(' ', '')
 
@@ -105,7 +105,8 @@ with data_exploration_cleaning:
   marketing_data['Tot_amount'] = marketing_data['MntWines'] + marketing_data['MntFruits'] + marketing_data['MntMeatProducts'] + marketing_data['MntFishProducts'] + marketing_data['MntSweetProducts'] + marketing_data['MntGoldProds']
 
   marketing_data['Tot_purchases'] = marketing_data['NumStorePurchases'] + marketing_data['NumCatalogPurchases'] + marketing_data['NumWebPurchases']
-  #we excluded the NumDealsPurchsed because it could result in a double counting for orders because it is not specified whether e.g. a WebPurchase could have been made with a deal.
+  
+  #The NumDealsPurchsed is excluded because it could result in a double counting for orders because it is not specified whether e.g. a WebPurchase could have been made with a deal.
 
   marketing_data['Average amount'] = marketing_data['Tot_amount'] / marketing_data['Tot_purchases']
 
@@ -119,6 +120,22 @@ with data_exploration_cleaning:
 
   st.subheader('Added features:')
   st.dataframe(marketing_data[['Tot_amount', 'Tot_purchases', 'Average amount']].describe())
+
+  #Year_Birth_Categories
+
+  def dividing_year_birth(year):
+    if year >= 1940 and year <= 1954:
+      return '1940-1954'
+    elif year > 1954 and year <= 1968:
+      return '1955-1968'
+    elif year > 1968 and year <= 1982:
+      return '1969-1982'
+    else:
+      return '1983-1996'
+
+  marketing_data['Year_birth_category'] = marketing_data['Year_Birth'].apply(dividing_year_birth)
+
+  #marketing_data[['Year_birth_category', 'Year_Birth']]
 
   st.subheader('Average customer look-a-like:')
   average_customer = marketing_data.describe().loc['mean']
@@ -150,8 +167,9 @@ with data_exploration_cleaning:
   col4.metric("Campaign 4", "7.4%")
   col5.metric("Campaign 5", "7.3%")
   col6.metric("Campaign 6", "15.1%")
-
-  st.write('Here we can clearly see that the last campaign was the one which performed better, the marketing team should concentrate on the strategies and channels used in this last campaign or use it as a starting point on which to develop further marketing efforts.')
+  
+  st.write('The last campaign was the one which performed better, the marketing team should concentrate on the strategies and channels used in this last campaign or use it as a starting point on which to develop further marketing efforts.')
+  
   ##Correlation betrween data.
   st.subheader('Correlation heatmap')
 
@@ -181,29 +199,13 @@ with data_exploration_cleaning:
 
   """)
 
-  #Year_Birth_Categories
-
-  def dividing_year_birth(year):
-    if year >= 1940 and year <= 1954:
-      return '1940-1954'
-    elif year > 1954 and year <= 1968:
-      return '1955-1968'
-    elif year > 1968 and year <= 1982:
-      return '1969-1982'
-    else:
-      return '1983-1996'
-
-  marketing_data['Year_birth_category'] = marketing_data['Year_Birth'].apply(dividing_year_birth)
-
-  #marketing_data[['Year_birth_category', 'Year_Birth']]
-
 with data_visualization:
   
   st.markdown('''
   ## Data Visualization.
   ###### Show interesting plots about the dataset.
 
-  ##### First, we will see some plots to show personal features of the customers:
+  ##### Personal features of the customers:
 ''')
 
   fig,ax=plt.subplots(nrows=3,ncols=3,figsize=(15,12))
@@ -259,8 +261,8 @@ with modeling:
   st.markdown('''
   ## Customer segmentation using K-means clustering
 
-  **The purpose is to divide the data space or data points into a number of groups, such that data points in the same groups are more similar to other data points in the same group, and dissimilar to the data points in other groups.
-  Clustering identifies what people do most of the times in order to predict what customers are more likely to do moving forward.**
+  *The purpose is to divide the data space or data points into a number of groups, such that data points in the same groups are more similar to other data points in the same group, and dissimilar to the data points in other groups.
+  Clustering identifies what people do most of the times in order to predict what customers are more likely to do moving forward.*
   ''')
   backup_df = marketing_data.reset_index()
 
@@ -271,14 +273,12 @@ with modeling:
   backup_df['Average amount'] = backup_df['Average amount'].astype(int)
 
   backup_df
-
-  """We are going to drop the columns 'Dt_Customer' and 'Recency' because are not of interest in our analysis:"""
-
+  #Drop of column which are not needed in the analysis
   backup_df.drop(['Dt_Customer', 'Recency'], axis=1, inplace=True)
 
   backup_df.info()
 
-  st.write('In order to perform the K-means clustering algorithm, we only need numerical variables given that it performs the clustering of data calculating and trying to minimize the euclidean distance between the k centroids of the clusters and the data points around each centroid. Then it finds the mean of each new cluster to establish a new centroid.')
+  st.write('In order to perform the K-means clustering algorithm, only numerical variables are needed given that the algorithm performs the clustering calculating and trying to minimize the euclidean distance between the k centroids of the clusters and the data points around each centroid. Then it finds the mean of each new cluster to establish a new centroid.')
 
   numeric_df = backup_df.select_dtypes(include='int')
   st.dataframe(numeric_df)
@@ -314,9 +314,7 @@ with modeling:
   st.image(image3)
   
 
-  st.write('Here 3 seems the optimal number of clusters given that after it the difference on the y-axis is slight.')
-
-  #Now we will feat the K-means clustering model on our data 'numeric_df' with 3 clusters. 
+  st.write('In this case, k=3 seems the optimal number of clusters.')
 
   km = KMeans(n_clusters=3, random_state=42)
   backup_df['cluster'] = km.fit_predict(x)
@@ -475,17 +473,17 @@ with modeling:
   - Low Income
   - Very probable the presence of at least 1 kid.
   - Very low wine amounts.
-  - lower expenditure in general.
-  - need to catch them with offers and discounts
-  - more probable that they will complain, CS need to treat them more careful.
-  - They buy mostly in Store and through web in equal measure.
+  - Lower expenditure in general.
+  - Need to catch them with offers and discounts
+  - More probable that they will complain, CS need to treat them more careful.
+  - They buy mostly in Store and through Web in equal measure.
 
   #### Cluster 2: High Income - Loyals.
   - Highest income
-  - Also the more LOYAL with on average 19 purchases per person in the last 2 years.
+  - The most LOYAL with an average of 19 purchases per person in the last 2 years.
   - The most of them have NO kids, if they have son they are teenagers.
-  - They spend hugely on things like Wine and Meat and on average they spend more also on the other goods.
-  - need to offer them some premium services or loyalty prizes in order to keep the customer relationship strong.
+  - They spend hugely on things like Wine and Meat and on average they spend more also on the whole selection of goods.
+  - Need to offer them some premium services or loyalty prizes in order to keep the customer relationship strong.
   - They buy largely in Store, on average 8 times, but also in discrete quantity via Web or catalog.
 
   #### Cluster 3: Middle Income, average loyalty and Parents of teens.
@@ -525,12 +523,12 @@ with modeling:
   st.image(image4)
 
   st.markdown("""
-  The marketing campaigns were very effective (except the second one) on the second segment, especially the last one, the fifth and the first one, this highlights that these campaign were well designed for premium customers and they should use them as a starting point for future ones.
+  The marketing campaigns were very effective (except the second one) on the second segment, especially the last one, the fifth and the first one, this highlights that these campaign were well designed for premium customers and marketing department should use them as a starting point for future ones.
 
-  Largely across all clusters the **last** campaign was the most effective. One fact that stands out is that the 5th campaign were accepted only by the High Income and Loyal cluster, so this highlights once again the success of the campaign in this segment.
+  Largely across all clusters the **last** campaign was the most effective. One fact that stands out is that the 5th campaign were accepted only by the High Income Loyal cluster, so this highlights once again how responsive is this segment about the marketing efforts.
 
   Campaign 3 was more effective in the Lower income cluster, so it is better if the marketing department targets this cluster to develop strategies incentrated to this campaign. Or, for example offering some special offers on cheap products for kids, being this cluster highly concentrated of them.
 
-  In general, people with less kids were more responsive to the campaigns so, if the company prefers to specialize on these type of customers they are performing really well. But, if they want to make people spend more on their products even if they have less disposable income they should start to diversificate the offering of products with more cheap products or special offers well targeted to each segment.
+  In general, people with less kids were more responsive to the campaigns so, if the company prefers to specialize on these type of customers they are performing really well, but if they want to make people spend more on their products even if they have less disposable income, they should start to diversificate the offering of products with more cheap products or special offers well targeted to each particular segment.
   """)
 
