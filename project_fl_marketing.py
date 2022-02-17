@@ -79,7 +79,7 @@ outliers_df = marketing_data.drop(['ID', 'AcceptedCmp1', 'Dt_Customer', 'Accepte
 
 outliers_df.head()
 
-outliers_df.plot(subplots=True, layout=(4,4), kind='box', figsize=(15, 17))
+st.write(outliers_df.plot(subplots=True, layout=(4,4), kind='box', figsize=(15, 17)))
 plt.suptitle('Outliers detection', fontsize=15, y=0.9)
 
 """We've found that Year_birth have outliers that could be the ones around 1900. It's kinda hard for >100yrs old people to make purchases by himself. For this reason we will check the Year_birth column:"""
@@ -96,14 +96,14 @@ marketing_data['Income'].sort_values()
 
 marketing_data = marketing_data[marketing_data['Income'] < 666666]
 
-"""The others features which seem like outliers from the boxplot can be considered as natural outliers and we will keep them as they are."""
+st.write('The others features which seem like outliers from the boxplot can be considered as natural outliers and we will keep them as they are.')
 
 marketing_data.describe()
 
-"""**Let's do some feature engineering in order to add features to our dataset**
+st.write('Let''s do some feature engineering in order to add features to our dataset')
 
 
-"""
+
 
 marketing_data['Tot_amount'] = marketing_data['MntWines'] + marketing_data['MntFruits'] + marketing_data['MntMeatProducts'] + marketing_data['MntFishProducts'] + marketing_data['MntSweetProducts'] + marketing_data['MntGoldProds']
 
@@ -115,7 +115,7 @@ marketing_data['Average amount'] = marketing_data['Tot_amount'] / marketing_data
 #New Columns overview
 marketing_data[['Tot_amount', 'Tot_purchases', 'Average amount']].describe()
 
-"""Here I noticed some weird data in the average amount column. The mean result infinite so let's look and we can also notice that the minimum value of Tot_purchase is 0. This means that some of the customer didn't make any purchase but spent an amount on some goods. This is very strange or maybe they got some free products thanks to coupons or special offers. """
+st.write('Here I noticed some weird data in the average amount column. The mean result infinite so let''s look and we can also notice that the minimum value of Tot_purchase is 0. This means that some of the customer didn''t make any purchase but spent an amount on some goods. This is very strange or maybe they got some free products thanks to coupons or special offers.')
 
 marketing_data['Tot_purchases'].value_counts().sort_index(ascending=True)
 
