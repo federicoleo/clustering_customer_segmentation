@@ -1,4 +1,4 @@
-# programming_project_2022
+# customer_segmentation_Kmeans
 
 The python file “project_fl_marketing.py” can be run with streamlit.
 
