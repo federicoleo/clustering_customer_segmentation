@@ -8,6 +8,7 @@ import seaborn as sns
 from sklearn.cluster import KMeans
 import streamlit as st
 from PIL import Image
+from sklearn.preprocessing import StandardScaler
 
 @st.cache(allow_output_mutation=True)
 def get_data(url):
