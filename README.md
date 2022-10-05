@@ -1,6 +1,6 @@
 # customer_segmentation_Kmeans
 
-Final project of the programming part of the exam "Programming and Database" part of the Data Science Degree at UniVR.
+Final project of the programming part of the exam "Programming and Database" part of the MSc in Data Science at UniVR.
 
 The python file “project_fl_marketing.py” can be run with streamlit.
 
